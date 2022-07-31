@@ -1,0 +1,48 @@
+displayName: jorgeHPjob
+maxTrialCount: 6
+parallelTrialCount: 6
+studySpec:
+  metrics:
+  - metricId: mse
+    goal: MINIMIZE
+  parameters:
+  - parameterId: model
+    categoricalValueSpec:
+      values:
+        - /gcs/investigacion-sensor/models.untrained/model_baseline00.h5
+        - /gcs/investigacion-sensor/models.untrained/model_best01a.h5
+        - /gcs/investigacion-sensor/models.untrained/model_best03a.h5
+        - /gcs/investigacion-sensor/models.untrained/model_best03b.h5
+        - /gcs/investigacion-sensor/models.untrained/model_conv00.h5
+        - /gcs/investigacion-sensor/models.untrained/model_conv02.h5
+        - /gcs/investigacion-sensor/models.untrained/model_dnn00.h5
+        - /gcs/investigacion-sensor/models.untrained/model_dnn01.h5
+        - /gcs/investigacion-sensor/models.untrained/model_dnn02.h5
+        - /gcs/investigacion-sensor/models.untrained/model_lstm00.h5
+        - /gcs/investigacion-sensor/models.untrained/model_lstm02.h5
+  algorithm: ALGORITHM_UNSPECIFIED
+trialJobSpec:
+  workerPoolSpecs:
+  - machineSpec:
+      machineType: n1-standard-4
+      acceleratorType: NVIDIA_TESLA_T4
+      acceleratorCount: 1
+    diskSpec:
+      bootDiskType: pd-standard
+      bootDiskSizeGb: 100
+    pythonPackageSpec:
+      executorImageUri: us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-7:latest
+      packageUris: gs://investigacion-sensor/sensor-training-0.33.tar.gz
+      pythonModule: trainer.task
+      args:
+        - -b 128
+        - --sequence_length=4320
+        - --sampling_rate=2
+        - --stride=2
+        - --steps=10
+        - --epochs=50
+        - https://github.com/philwebsurfer/dliaq/raw/main/data/data_10min.pickle.gz
+        - /gcs/investigacion-sensor/output-hyper10min-w30-stride2-samplingrate2
+    replicaCount: 1
+  baseOutputDirectory:
+      outputUriPrefix: gs://investigacion-sensor/output-hyper10min-w30-stride2-samplingrate2
