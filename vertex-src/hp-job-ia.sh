@@ -29,6 +29,6 @@ gcloud ai \
   --display-name=$1 \
   --max-trial-count=11 \
   --parallel-trial-count=11 \
-  --region=us-central1 \
-  --verbosity debug
+  --region=us-central1 #\
+#  --verbosity debug
 echo -e  "\n==============================\nEnd time $(date '+%Y-%m-%d %H:%M:%S')\n"
