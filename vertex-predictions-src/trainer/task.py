@@ -197,6 +197,19 @@ def get_tsparams(base_dir, modelname, debug=False):
         tsparams = dill.load(tsparamsfile)
     logging.info("Time series parameters:")
     logging.info("{ %s }"%tsparams)
+    
+    if "sequence_length" not in tsparams.keys():
+        logging.error("Sequence Length not found! Doing our best guesses :)")
+        resample_min = re.sub("^.*output-hyper([0-9]*)min.*$", r"\1",
+                            base_dir)
+        logging.info("Resample Min: %s"%resample_min)
+        logging.info("Window Size Days: %s"%tsparams["window_size_days"])
+        tsparams["sequence_length"] = (
+            24 * tsparams["window_size_days"] * int(resample_min)
+        )
+        logging.error("Sequence Length not found! Guessed value: %d"%(
+            tsparams["sequence_length"]))
+    
     return tsparams
 
 def setup_logger(logname="logger_jorge3a", loglevel=logging.INFO):
